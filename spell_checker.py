@@ -1,12 +1,11 @@
 from english_words import english_words_set as ews
 import string
-import unittest
 
 
 def open_file(filename='englishwords.txt'):
     """
     Opens a text file and gets its word
-    :param filename: string
+    :param filename: name of the file
     :return: words in the text file
     """
     word_set = []
@@ -22,40 +21,65 @@ def open_file(filename='englishwords.txt'):
 
 
 class Spellchecker:
-    """
-    Checks spelling of all words and returns suggestions of corrected word
-    """
-    def __init__(self, word):
-        self.word_list = word
+    """Checks spelling of all words and returns suggestions of corrected word"""
+    def __init__(self):
         self.wrong_words = []
-        self.corrected_words = []
+        self.corrected_words = {}
 
-    def check_word(self):
-        for word in self.word_list:
-            if word not in ews:
-                self.wrong_words.append(word)
-
+    def single_transposition(self):
+        """
+        Performs single transposition on the incorrect words
+        :return: The transposed words
+        """
         for word in self.wrong_words:
             temp_word = []
             for i in range(len(word) + 1):
                 temp_word += [(word[:i], word[i:])]
 
-            transpose = [L + R[1] + R[0] + R[2:] for L, R in temp_word if len(R) > 1]
+            # Takes the tuple of the left and right side of the word and by swapping the first and second element of the
+            # second index, it creates a single transposition of the words
+            transpose = [left + right[1] + right[0] + right[2:] for left, right in temp_word if len(right) > 1]
 
-            for transpose_corrected_word in transpose:
-                if transpose_corrected_word in ews:
-                    self.corrected_words.append(transpose_corrected_word)
+            for transposed_word in transpose:
+                if transposed_word in ews:
+                    if word in self.corrected_words:
+                        self.corrected_words[word].append(transposed_word)
+                    else:
+                        self.corrected_words[word] = [transposed_word]
                     continue
-
         return self.corrected_words
 
-    def single_transposition(self):
-        pass
+    def delete_duplicates(self):
+        for word in self.wrong_words:
+            changed_word = [letter for letter in word]
+
+            # Finds if the letter in front of the current letter is the same which is therefore a double letter
+            for length_word in range(len(word)-1):
+                if word[length_word] == word[length_word + 1]:
+                    changed_word.remove(word[length_word])
+            changed_word = ''.join(changed_word)
+
+            if changed_word in ews:
+                if changed_word in self.corrected_words:
+                    self.corrected_words[word].append(changed_word)
+                else:
+                    self.corrected_words[word] = [changed_word]
+                continue
+
+        return self.wrong_words
+
+    def find_incorrect_word(self, words):
+        for word in words:
+            if word not in ews:
+                self.wrong_words.append(word)
+        Spellchecker.single_transposition(self)
+        Spellchecker.delete_duplicates(self)
+        return self.corrected_words
 
     def __str__(self):
         return f'{self.wrong_words}, {self.corrected_words}'
 
 
-a = Spellchecker(open_file())
-print(a.check_word())
+a = Spellchecker()
+print(a.find_incorrect_word(open_file()))
 

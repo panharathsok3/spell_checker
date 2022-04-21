@@ -12,10 +12,11 @@ def open_file(filename='englishwords.txt'):
     with open(filename, encoding='utf8') as f:
         for line in f:
             # Remove spaces, punctuations, \n, and make all the words lowercase
-            line = line.strip().lower().split()
+            line = line.strip().lower()
             for word in line:
                 if word in string.punctuation:
                     line = line.replace(word, '')
+            line = line.split()
             word_set += line
     return word_set
 
@@ -64,6 +65,7 @@ class Spellchecker:
             for length_word in range(len(word) - 1):
                 if word[length_word] == word[length_word + 1]:
                     changed_word.remove(word[length_word])
+                    break
             changed_word = ''.join(changed_word)
 
             if changed_word in ews:

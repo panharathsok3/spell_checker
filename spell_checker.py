@@ -22,6 +22,7 @@ def open_file(filename='englishwords.txt'):
 
 class Spellchecker:
     """Checks spelling of all words and returns suggestions of corrected word"""
+
     def __init__(self):
         self.wrong_words = []
         self.corrected_words = {}
@@ -29,10 +30,12 @@ class Spellchecker:
     def single_transposition(self):
         """
         Performs single transposition on the incorrect words
-        :return: The transposed words
+        :return: Dictionary of the corrected words
         """
         for word in self.wrong_words:
             temp_word = []
+
+            # Splits the word into 2 halves, so we can traverse through them
             for i in range(len(word) + 1):
                 temp_word += [(word[:i], word[i:])]
 
@@ -51,14 +54,14 @@ class Spellchecker:
 
     def delete_duplicates(self):
         """
-
-        :return:
+        Deletes one of the double letter words
+        :return: Dictionary of the corrected words
         """
         for word in self.wrong_words:
             changed_word = [letter for letter in word]
 
             # Finds if the letter in front of the current letter is the same which is therefore a double letter
-            for length_word in range(len(word)-1):
+            for length_word in range(len(word) - 1):
                 if word[length_word] == word[length_word + 1]:
                     changed_word.remove(word[length_word])
             changed_word = ''.join(changed_word)
@@ -74,8 +77,8 @@ class Spellchecker:
 
     def add_extra_word(self):
         """
-
-        :return:
+        Adds an extra letter in the word using the letters in the word itself
+        :return: Dictionary of the corrected words
         """
         for word in self.wrong_words:
             temp_word = []
@@ -83,6 +86,7 @@ class Spellchecker:
             for i in range(len(word) + 1):
                 temp_word += [(word[:i], word[i:])]
 
+            # Concatenates the left side of the word with the first letter of the right side of the word
             added_letter_words = [left + right[0] + right for left, right in temp_word if len(right) > 0]
 
             for added_words in added_letter_words:
@@ -95,18 +99,21 @@ class Spellchecker:
         return self.corrected_words
 
     def find_incorrect_word(self, words):
+        """
+        Calls the methods used to find the corrected words
+        :param words: list of words from a file
+        :return: Dictionary of the corrected words
+        """
+
+        # Checks for the wrong words in the text file
         for word in words:
             if word not in ews:
                 self.wrong_words.append(word)
         Spellchecker.single_transposition(self)
         Spellchecker.delete_duplicates(self)
         Spellchecker.add_extra_word(self)
+
         return self.corrected_words
 
     def __str__(self):
         return f'{self.wrong_words}, {self.corrected_words}'
-
-
-a = Spellchecker()
-print(a.find_incorrect_word(open_file()))
-

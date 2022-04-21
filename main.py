@@ -1,4 +1,4 @@
-from test_2 import Spellchecker, open_file
+from spell_checker import Spellchecker, open_file
 
 
 finish = 0

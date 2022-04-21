@@ -50,6 +50,10 @@ class Spellchecker:
         return self.corrected_words
 
     def delete_duplicates(self):
+        """
+
+        :return:
+        """
         for word in self.wrong_words:
             changed_word = [letter for letter in word]
 
@@ -66,7 +70,29 @@ class Spellchecker:
                     self.corrected_words[word] = [changed_word]
                 continue
 
-        return self.wrong_words
+        return self.corrected_words
+
+    def add_extra_word(self):
+        """
+
+        :return:
+        """
+        for word in self.wrong_words:
+            temp_word = []
+
+            for i in range(len(word) + 1):
+                temp_word += [(word[:i], word[i:])]
+
+            added_letter_words = [left + right[0] + right for left, right in temp_word if len(right) > 0]
+
+            for added_words in added_letter_words:
+                if added_words in ews:
+                    if added_words in self.corrected_words:
+                        self.corrected_words[word].append(added_words)
+                    else:
+                        self.corrected_words[word] = [added_words]
+                    continue
+        return self.corrected_words
 
     def find_incorrect_word(self, words):
         for word in words:
@@ -74,6 +100,7 @@ class Spellchecker:
                 self.wrong_words.append(word)
         Spellchecker.single_transposition(self)
         Spellchecker.delete_duplicates(self)
+        Spellchecker.add_extra_word(self)
         return self.corrected_words
 
     def __str__(self):

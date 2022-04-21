@@ -13,7 +13,3 @@ while not finish:
         finish = 1
     except FileNotFoundError:
         file_name = input('Please enter the correct name of your file: ')
-
-
-
-
